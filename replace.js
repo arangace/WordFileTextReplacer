@@ -5,6 +5,7 @@ var fs = require("fs");
 var path = require("path");
 
 const prompt = require('prompt');
+const { Console } = require("console");
 
 prompt.start();
 
@@ -31,6 +32,7 @@ const userPrompt = () => {
             hidden: false
         }
     ];
+    console.log("Please enter in the required details")
     prompt.get(
         properties,
         function (err, result) {
@@ -46,6 +48,7 @@ const userPrompt = () => {
             replaceInformation.job_title = result.job_title;
             //console.log(replaceInformation);
             replace(replaceInformation);
+            console.log("Creating..")
         });
 
     function onErr(err) {
@@ -78,8 +81,8 @@ const replace = (replaceInformation) => {
     });
 
     var buf = doc.getZip().generate({ type: "nodebuffer" });
-
+    console.log(`Complete! \nFile created: ${replaceInformation.company_name}-${replaceInformation.job_title}-cover-letter.docx`)
     // buf is a nodejs buffer, you can either write it to a file or do anything else with it.
-    fs.writeFileSync(path.resolve(__dirname, `${replaceInformation.company_name, replaceInformation.job_title}-cover-letter.docx`), buf);
+    fs.writeFileSync(path.resolve(__dirname, `${replaceInformation.company_name}-${replaceInformation.job_title}-cover-letter.docx`), buf);
 }
 userPrompt();
