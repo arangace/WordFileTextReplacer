@@ -13,5 +13,6 @@
 ### To Run the program ensure you have node installed then, execute the following commands.
 
 1. `Open a new terminal`
-1. `npm install`
-1. `node replace.js`
+1. `cd to the folder directory`
+1. `Run: npm install`
+1. `Run: node replace.js`
