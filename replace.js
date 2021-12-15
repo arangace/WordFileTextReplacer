@@ -16,7 +16,7 @@ const userPrompt = () => {
     const properties = [
         {
             name: 'original_file',
-            description: 'Original file name (excluding .docx) Example: coverletter '
+            description: 'Original file name (excluding .docx) if file name is example.docx, Example: example '
         },
         {
 
@@ -42,9 +42,9 @@ const userPrompt = () => {
         },
         {
             name: 'event_time',
-            description: 'Event time (24hr time)',
-            validator: /^[0-23\s\:]+$/,
-            warning: 'Event time must be in 24hr time',
+            description: 'Event time in am or pm i.e. 2:00pm',
+            validator: /^[0-23\a-zA-Z\s\:]+$/,
+            warning: 'Event time in invalid format',
             hidden: false
         },
         {
