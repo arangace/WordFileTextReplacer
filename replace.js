@@ -43,7 +43,7 @@ const userPrompt = () => {
         {
             name: 'event_time',
             description: 'Event time in am or pm i.e. 2:00pm',
-            validator: /^[0-9\a-zA-Z\s\:]+$/,
+            validator: /^(0?[1-9]|1[012]):[0-5][0-9]$/,
             warning: 'Event time in invalid format',
             hidden: false
         },
