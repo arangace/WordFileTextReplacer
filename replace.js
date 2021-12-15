@@ -53,8 +53,7 @@ const userPrompt = () => {
             validator: /^[a-zA-Z\s\-]+$/,
             warning: 'Dress code must be only letters, spaces, or dashes',
             hidden: false
-        }
-        ,
+        },
         {
             name: 'senders_name',
             description: 'Sender name',
@@ -100,7 +99,7 @@ const replace = (replaceInformation) => {
         );
     }
     catch (err) {
-        console.log(err);
+        console.log("\nERROR: Cannot read File or file does not exist\n");
         console.log('Exiting..')
 
         return -1;
