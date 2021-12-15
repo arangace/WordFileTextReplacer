@@ -5,12 +5,14 @@ var fs = require("fs");
 var path = require("path");
 
 const prompt = require('prompt');
-const { Console } = require("console");
 
 prompt.start();
 
+//This function starts the user prompt and sends questions to the user
+//The user then answers the questions of what information they want
+//replaced and reads the users input and stores it for replacing later
 const userPrompt = () => {
-    const replaceInformation = []
+    //Define prompts to user
     const properties = [
         {
             name: 'original_file',
@@ -18,71 +20,108 @@ const userPrompt = () => {
         },
         {
 
-            name: 'company_name',
-            description: 'Name of company',
+            name: 'receiver_name',
+            description: 'Name of person addressed to',
             validator: /^[a-zA-Z\s\-]+$/,
-            warning: 'Company Name must be only letters, spaces, or dashes',
+            warning: 'Must contain only letters, spaces, or dashes',
             hidden: false
         },
         {
-            name: 'job_title',
-            description: 'Job title',
+            name: 'event_name',
+            description: 'Event title',
             validator: /^[a-zA-Z\s\-]+$/,
-            warning: 'Job Title must be only letters, spaces, or dashes',
+            warning: 'Event Title must be only letters, spaces, or dashes',
+            hidden: false
+        },
+        {
+            name: 'venue_name',
+            description: 'Venue location',
+            validator: /^[a-zA-Z\s\-]+$/,
+            warning: 'Venue Title must be only letters, spaces, or dashes',
+            hidden: false
+        },
+        {
+            name: 'event_time',
+            description: 'Event time (24hr time)',
+            validator: /^[0-23\s\:]+$/,
+            warning: 'Event time must be in 24hr time',
+            hidden: false
+        },
+        {
+            name: 'dress_code',
+            description: 'Dress code',
+            validator: /^[a-zA-Z\s\-]+$/,
+            warning: 'Dress code must be only letters, spaces, or dashes',
+            hidden: false
+        }
+        ,
+        {
+            name: 'senders_name',
+            description: 'Sender name',
+            validator: /^[a-zA-Z\s\-]+$/,
+            warning: 'Sender must be only letters, spaces, or dashes',
             hidden: false
         }
     ];
-    console.log("Please enter in the required details")
+    //sends message to console
+    console.log("Please enter in the required details..")
+    //receives console input and parses into replaceInformation for later handling
     prompt.get(
         properties,
         function (err, result) {
+            let replaceInformation = []
             if (err) {
                 return onErr(err);
             }
-            console.log('Company data successfully recieved');
-            console.log('  Original file name ' + result.original_file);
-            console.log('  Company name: ' + result.company_name);
-            console.log('  Job Title: ' + result.job_title);
-            replaceInformation.original_file = result.original_file;
-            replaceInformation.company_name = result.company_name;
-            replaceInformation.job_title = result.job_title;
-            //console.log(replaceInformation);
+            properties.forEach((element) => {
+                console.log(`${element.description} is: ${result[element.name]}`);
+                replaceInformation[element.name] = result[element.name]
+            })
+            //Take the constructed data and replace the word file with the new data
             replace(replaceInformation);
-            console.log("Creating..")
+
         });
 
     function onErr(err) {
         console.log(err);
-        return 1;
+        return -1;
     }
 
-
 }
+//This function takes the new information to be replaced and replaces the
+//old .docx file with the new information, creating a new file with the new information.
+//Without tampering the original file.
 const replace = (replaceInformation) => {
+    // Load the docx file as binary content into the code for use
+    try {
+        var content = fs.readFileSync(
+            path.resolve(__dirname, replaceInformation.original_file + ".docx"),
+            "binary"
+        );
+    }
+    catch (err) {
+        console.log(err);
+        console.log('Exiting..')
 
-    // Load the docx file as binary content
-    var content = fs.readFileSync(
-        path.resolve(__dirname, replaceInformation.original_file + ".docx"),
-        "binary"
-    );
+        return -1;
+    }
+
     var zip = new PizZip(content);
-
+    //creates a new doc object, ready to take the new information
     const doc = new Docxtemplater(zip, {
         paragraphLoop: true,
         linebreaks: true,
     });
 
-
-    // render the document
+    // render the document with the new replaced information i.e.
     // (replace all occurences of {first_name} by John, {last_name} by Doe, ...)
-    doc.render({
-        company_name: replaceInformation.company_name,
-        job_title: replaceInformation.job_title,
-    });
+    doc.render(
+        replaceInformation
+    );
 
     var buf = doc.getZip().generate({ type: "nodebuffer" });
-    console.log(`Complete! \nFile created: ${replaceInformation.company_name}-${replaceInformation.job_title}-cover-letter.docx`)
-    // buf is a nodejs buffer, you can either write it to a file or do anything else with it.
-    fs.writeFileSync(path.resolve(__dirname, `${replaceInformation.company_name}-${replaceInformation.job_title}-cover-letter.docx`), buf);
+    console.log(`Complete! \nFile created: ${replaceInformation[Object.keys(replaceInformation)[1]]}-${replaceInformation[Object.keys(replaceInformation)[2]]}.docx`)
+    //Adds the new file in the specified directory with the new file name
+    fs.writeFileSync(path.resolve(__dirname + "/wordFiles", ` ${replaceInformation[Object.keys(replaceInformation)[1]]}-${replaceInformation[Object.keys(replaceInformation)[2]]}.docx`), buf);
 }
 userPrompt();
